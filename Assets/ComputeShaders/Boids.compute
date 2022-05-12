@@ -1,0 +1,100 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct BoidData
+{
+    float3 velocity;
+    float3 position;
+}
+
+ RWStructuredBuffe<BoidData> boids;
+
+float cohesionDist;
+float alignmentDist;
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+StructuredBuffer<BoidData> buffer;
+
+int length;
+
+
+float3 Cohesion()
+{
+    float3 averagePos = { 0f, 0f, 0f };
+    int amount = 0;
+
+    for(int i = 0; i < length; i++)
+    {
+        if(boids[id.x].position - boids[i].position < cohesionDist)
+        {
+            averagePos = averagePos + boids[i].position;
+            amount = amount + 1;
+        }
+    }
+
+    averagePos = averagePos / ammount;
+
+    return averagePos;
+    
+}
+
+float3 Alignment()
+{
+    float3 averageVel = { 0f, 0f, 0f };
+    int amount = 0;
+
+    for(int i = 0; i < length; i++)
+    {
+        if(boids[id.x].position - boids[i].position < alignmentDist)
+        {
+            averagePos = averageVel + boids[i].velocity;
+            amount = amount + 1;
+        }
+    }
+
+    averagePos = averageVel / ammount;
+
+    return averageVel;
+}
+
+float3 Seperation()
+{
+    //find the nearest neigbor
+    int nearNeighborIndex = 0;
+    float3 nearNeighbor = boids[id.x] - boids[0].position;
+    for(int i = 1; i < length; i++)
+    {
+        //check its not including itself
+        if(i != id.x)
+        {
+            if(boids[id.x] - boids[0].position < nearNeighbor)
+            {
+                nearNeighborIndex = i;
+                nearNeighbor = boids[id.x] - boids[0].position;
+            }
+        }
+    }
+
+}
+
+float Distance(float3 orgin, float3 object)
+{
+    return (orgin[1])
+}
+
+[numthreads(64,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float3 cohesion;
+    float3 alignment;
+    float3 seperation;
+
+    cohesion = Cohesion();
+    alignment = Alignment();
+    seperation = Seperation();
+
+    
+    
+    Result[id.x] = cohesion;
+}
